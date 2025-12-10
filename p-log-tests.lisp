@@ -1,5 +1,8 @@
 ;; Tests for p-log package
 
+#+asdf(asdf:load-asdf)
+(ql:register-local-projects)
+
 (require :asdf)
 (require :fiveam)
 (require :cl-ppcre)
