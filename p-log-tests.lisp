@@ -144,4 +144,4 @@
 
 ;;; Run tests
 (let ((results (run! 'p-log-suite)))
-  (sb-ext:quit :unix-status (if (zerop (tests-failed results)) 0 1)))
+  (sb-ext:quit :unix-status (if (test-failure-p results) 1 0)))
