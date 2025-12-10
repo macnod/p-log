@@ -26,7 +26,7 @@ install-dependencies:
 	touch .dependencies-installed
 
 test:
-	ros run -- --load "$(TEST_FILE)" --quit
+	ros run -- --disable-debugger --load "$(TEST_FILE)" --quit
 
 .PHONY: install-roswell install-dependencies test
 .DEFAULT_GOAL := test
