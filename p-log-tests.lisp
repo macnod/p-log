@@ -34,7 +34,7 @@
       (let ((cnt (pinfo :in "test" :foo "bar")))
         (is (= cnt 1) "Wrote to single log stream")
         (let ((s (get-output-stream-string out)))
-          (is (search "[INFO]" s) "Log output includes severity")
+          (is (search "[INFX]" s) "Log output includes severity")
           (is (search "in=test" s) "Log output includes :in key")
           (is (search "foo=bar" s) "Log output includes additional data"))))))
 
