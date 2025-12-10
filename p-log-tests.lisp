@@ -3,8 +3,9 @@
 (require :asdf)
 (require :fiveam)
 (require :cl-ppcre)
+(require :uiop)
 
-(push #P"/home/runner/work/p-log/p-log/" asdf:*central-registry*)
+(push (uiop:getcwd) asdf:*central-registry*)
 (ql:register-local-projects)
 (asdf:load-system :p-log)
 
