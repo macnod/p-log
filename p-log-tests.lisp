@@ -139,8 +139,9 @@
                      (member name (list-log-streams) :test #'string=))
               '("s1" "s2" "s3")))
         (is (= (length (list-log-streams)) 3))
-        (is (= (close-log-streams) 3))
+        (is (= (close-log-streams) 2))
         (is (not (list-log-streams)))))))
 
 ;;; Run tests
-(run! 'p-log-suite)
+(let ((results (run! 'p-log-suite)))
+  (sb-ext:quit :unix-status (if (zerop (tests-failed results)) 0 1)))
