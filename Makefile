@@ -26,7 +26,7 @@ install-dependencies:
 	touch .dependencies-installed
 
 test:
-	ros run -- --eval "(ql:register-local-projects)" --load "$(TEST_FILE)" --quit
+	ros run -- --load "$(TEST_FILE)" --quit
 
 .PHONY: install-roswell install-dependencies test
 .DEFAULT_GOAL := test

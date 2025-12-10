@@ -3,6 +3,9 @@
 (require :asdf)
 (require :fiveam)
 (require :cl-ppcre)
+
+(push #P"." asdf:*central-registry*)
+(ql:register-local-projects)
 (asdf:load-system :p-log)
 
 (defpackage :p-log-tests (:use :cl :fiveam :p-log :cl-ppcre))
