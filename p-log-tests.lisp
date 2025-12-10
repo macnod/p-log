@@ -139,7 +139,7 @@
                      (member name (list-log-streams) :test #'string=))
               '("s1" "s2" "s3")))
         (is (= (length (list-log-streams)) 3))
-        (is (= (close-log-streams) 2) "Closed three streams"))
+        (is (= (close-log-streams) 2) "Closed three streams")
         (is (not (list-log-streams)))))))
 
 ;;; Run tests
