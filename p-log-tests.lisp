@@ -3,9 +3,7 @@
 (require :asdf)
 (require :fiveam)
 (require :cl-ppcre)
-
-
-(asdf:load-system :p-log)
+(require :p-log #P"./p-log.asd")
 
 (defpackage :p-log-tests (:use :cl :fiveam :p-log :cl-ppcre))
 
