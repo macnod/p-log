@@ -23,7 +23,6 @@ install-dependencies:
 	ros install fiveam
 	ros install macnod/dc-ds
 	ros install macnod/dc-time
-	touch .dependencies-installed
 
 test:
 	ros run -- --disable-debugger --load "$(TEST_FILE)" --quit
