@@ -1,9 +1,11 @@
 ;; Tests for p-log package
 
 (require :asdf)
-(require :p-log)
 (require :fiveam)
 (require :cl-ppcre)
+
+
+(asdf:load-system :p-log)
 
 (defpackage :p-log-tests (:use :cl :fiveam :p-log :cl-ppcre))
 
