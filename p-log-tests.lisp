@@ -30,13 +30,13 @@
             (sink (make-log-stream "test" out
                     :log-format :plain
                     :severity-threshold :debug)))
-      (is-true sink)
+      (is-true sink "Log sink created successfully")
       (let ((cnt (pinfo :in "test" :foo "bar")))
-        (is (= cnt 1))
+        (is (= cnt 1) "Wrote to single log stream")
         (let ((s (get-output-stream-string out)))
-          (is (search "[INFO]" s))
-          (is (search "in=test" s))
-          (is (search "foo=bar" s)))))))
+          (is (search "[INFO]" s) "Log output includes severity")
+          (is (search "in=test" s) "Log output includes :in key")
+          (is (search "foo=bar" s) "Log output includes additional data"))))))
 
 (test test-severity-filter
   (with-clean-logs
@@ -139,7 +139,7 @@
                      (member name (list-log-streams) :test #'string=))
               '("s1" "s2" "s3")))
         (is (= (length (list-log-streams)) 3))
-        (is (= (close-log-streams) 2) "Closed three streams")
+        (is (= (close-log-streams) 3) "Closed three streams")
         (is (not (list-log-streams)))))))
 
 ;;; Run tests
