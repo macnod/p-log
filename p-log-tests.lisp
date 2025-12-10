@@ -143,5 +143,5 @@
         (is (not (list-log-streams)))))))
 
 ;;; Run tests
-(let ((results (run! 'p-log-suite)))
-  (sb-ext:quit :unix-status (if (test-failure-p results) 1 0)))
+(unless (run-all-tests)
+  (sb-ext:quit :unix-status 1))
