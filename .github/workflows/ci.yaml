@@ -6,7 +6,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup Roswell
-      uses: roguehifi/roswell-gh-action@v1
+      uses: macnod/roswell-action@v1
       with:
         sbcl-version: 2.5.10
     - name: Install dependencies
