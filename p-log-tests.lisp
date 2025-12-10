@@ -4,7 +4,7 @@
 (require :fiveam)
 (require :cl-ppcre)
 
-(push #P"." asdf:*central-registry*)
+(push #P"/home/runner/work/p-log/p-log/" asdf:*central-registry*)
 (ql:register-local-projects)
 (asdf:load-system :p-log)
 
