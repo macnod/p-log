@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup Roswell
-      uses: macnod/roswell-action@master
+      uses: macnod/roswell-action@v1
       with:
         sbcl-version: 2.5.10
     - name: Install dependencies
