@@ -28,12 +28,6 @@
 ;; To remove a sink from the list, use the CLOSE-LOG function.
 (defparameter *logs* nil)
 
-;; Some nice macros
-(defmacro pdebug (&rest plist) `(plog :debug ',plist))
-(defmacro pinfo  (&rest plist) `(plog :info  ',plist))
-(defmacro pwarn  (&rest plist) `(plog :warn  ',plist))
-(defmacro perror (&rest plist) `(plog :error ',plist))
-
 (defun log-sink-unique-p (name file-or-stream)
   "Helper function to determine if NAME or FILE-STREAM are already taken."
   (cond
@@ -302,3 +296,8 @@ value of a :message key."
     when bad-entry do (format stream bad-entry)
     (force-output stream)
     counting log-entry))
+
+(defun pdebug (&rest plist) (plog :debug plist))
+(defun pinfo (&rest plist) (plog :info plist))
+(defun pwarn (&rest plist) (plog :warn plist))
+(defun perror (&rest plist) (plog :error plist))
