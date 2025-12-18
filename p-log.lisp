@@ -303,3 +303,5 @@ value of a :message key."
 (defun pinfo (&rest plist) (plog :info plist))
 (defun pwarn (&rest plist) (plog :warn plist))
 (defun perror (&rest plist) (plog :error plist))
+
+(defun pversion () "0.1")
