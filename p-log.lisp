@@ -57,21 +57,22 @@
     (t t)))
 
 (defun create-file-stream-sink (name file log-format append severity-threshold)
-  "Internal helper function for OPEN-PLOG."
+  "Internal helper function for MAKE-LOG-STREAM."
   (cond
     ;; Check log-format
     ((not (member log-format '(:jsonl :plain)))
-      (perror :in "open-plog" :status "invalid log-format value"
+      (perror :in "create-file-stream-sink" :status "invalid log-format value"
         :name name :log-format log-format)
       nil)
     ;; Check append parameter
     ((not (member append '(nil t)))
-      (perror :in "open-plog" :status "append value not boolean"
+      (perror :in "create-file-stream-sink" :status "append value not boolean"
         :name name :append append)
       nil)
     ;; Check severity threshold
     ((not (getf *log-severity-map* severity-threshold))
-      (perror :in "open-plog" :status "invalid severity-threshold value"
+      (perror :in "create-file-stream-sink"
+        :status "invalid severity-threshold value"
         :name name :severity-threshold severity-threshold)
       nil)
     (t (let* ((stream (handler-case
@@ -81,7 +82,7 @@
                           :if-does-not-exist :create)
                         (error (e)
                           (plog :error
-                            (list :in "open-plog"
+                            (list :in "create-file-stream-sink"
                               :status "failed to open file"
                               :name name :filename file
                               :error (format nil "~a" e)))
@@ -100,16 +101,17 @@
            sink)))))
 
 (defun create-stream-sink (name stream log-format severity-threshold)
-  "Internal helper function for OPEN-PLOG."
+  "Internal helper function for MAKE-LOG-STREAM."
   (cond
     ;; Check log-format
     ((not (member log-format '(:jsonl :plain)))
-      (perror :in "open-plog" :status "invalid log-format value"
+      (perror :in "create-stream-sink" :status "invalid log-format value"
         :name name :log-format log-format)
       nil)
     ;; Check severity threshold
     ((not (getf *log-severity-map* severity-threshold))
-      (perror :in "open-plog" :status "invalid severity-threshold value"
+      (perror :in "create-stream-sink"
+        :status "invalid severity-threshold value"
         :name name :severity-threshold severity-threshold)
       nil)
     (t (let ((sink (list
@@ -174,8 +176,8 @@ the new record. If the function fails to create the new record, it returns NIL.
     (t nil)))
 
 (defun close-log-stream (name)
-  "If log sink NAME is open (see OPEN-LOG), then this function closes the stream
-and returns T. If the stream is a file stream, the file is closed too.
+  "If log sink NAME is open (see MAKE-LOG-STREAM), then this function closes the
+stream and returns T. If the stream is a file stream, the file is closed too.
 Otherwise, if the log sink is not open, this function does nothing."
   (let ((sink (car (remove-if-not
                      (lambda (s) (equal (getf s :name) name))
@@ -229,6 +231,18 @@ returns the number of streams that were closed."
       finally
       (return (format nil "~{~a~^; ~}" pairs)))))
 
+(defun sanitized-plist (plist)
+  "Removes anything that FORMAT might interpret as a parameter from plist."
+  (loop for k in plist by #'cddr
+    for v in (cdr plist) by #'cddr
+    for sk = (if (re:scan "~" (format nil "~a" k))
+               (re:regex-replace-all "~" (format nil "~a" k) "~~")
+               k)
+    for sv = (re:regex-replace-all "~" (format nil "~a" v) "~~")
+    collect sk
+    collect sv))
+
+
 (defun clean-plist (plist)
   "Removes reserved keys from PLIST."
   (loop
@@ -262,24 +276,25 @@ this function. However, PLIST must include the :in key, with a lower-case string
 naming the function that calls P-LOG. The information in PLIST is added as the
 value of a :message key."
   (loop
+    with slist = (sanitized-plist plist)
     with sev = (getf *log-severity-map* severity)
     with sev-msg = (or sev (getf *log-severity-map* :error))
     with sev-err = (unless sev '(:in "plog" :status "invalid severity value"
                                   :severity severity))
-    with bad = (unless (plistp plist)
+    with bad = (unless (plistp slist)
                  `(:in "plog" :status "bad plist"
-                    :plist ,(format nil "~a" plist)))
-    with clean-plist = (unless bad (clean-plist plist))
+                    :plist ,(re:regex-replace-all "~" (format nil "~a" slist) "~~")))
+    with clean-plist = (unless bad (clean-plist slist))
     with plist-err = (unless (or bad
-                               (equal (plist-keys plist)
+                               (equal (plist-keys slist)
                                  (plist-keys clean-plist)))
                              `(:in "plog" :status "reserved keys ignored"
-                                :keys ,(set-difference (plist-keys plist)
+                                :keys ,(set-difference (plist-keys slist)
                                          (plist-keys clean-plist))))
     with in-err = (unless (or bad (member :in (plist-keys clean-plist)))
                     (setf clean-plist (append '(:in "(missing)") clean-plist))
                     `(:in "plog" :status "missing :in key"
-                       :keys ,(plist-keys plist)))
+                       :keys ,(plist-keys slist)))
     for log in *logs*
     for sev-log = (getf log :severity-threshold)
     for stream = (getf log :stream)
