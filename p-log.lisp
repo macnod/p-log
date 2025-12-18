@@ -231,18 +231,6 @@ returns the number of streams that were closed."
       finally
       (return (format nil "~{~a~^; ~}" pairs)))))
 
-(defun sanitized-plist (plist)
-  "Removes anything that FORMAT might interpret as a parameter from plist."
-  (loop for k in plist by #'cddr
-    for v in (cdr plist) by #'cddr
-    for sk = (if (re:scan "~" (format nil "~a" k))
-               (re:regex-replace-all "~" (format nil "~a" k) "~~")
-               k)
-    for sv = (re:regex-replace-all "~" (format nil "~a" v) "~~")
-    collect sk
-    collect sv))
-
-
 (defun clean-plist (plist)
   "Removes reserved keys from PLIST."
   (loop
@@ -276,25 +264,24 @@ this function. However, PLIST must include the :in key, with a lower-case string
 naming the function that calls P-LOG. The information in PLIST is added as the
 value of a :message key."
   (loop
-    with slist = (sanitized-plist plist)
     with sev = (getf *log-severity-map* severity)
     with sev-msg = (or sev (getf *log-severity-map* :error))
     with sev-err = (unless sev '(:in "plog" :status "invalid severity value"
                                   :severity severity))
-    with bad = (unless (plistp slist)
+    with bad = (unless (plistp plist)
                  `(:in "plog" :status "bad plist"
-                    :plist ,(re:regex-replace-all "~" (format nil "~a" slist) "~~")))
-    with clean-plist = (unless bad (clean-plist slist))
+                    :plist ,(princ-to-string plist)))
+    with clean-plist = (unless bad (clean-plist plist))
     with plist-err = (unless (or bad
-                               (equal (plist-keys slist)
+                               (equal (plist-keys plist)
                                  (plist-keys clean-plist)))
                              `(:in "plog" :status "reserved keys ignored"
-                                :keys ,(set-difference (plist-keys slist)
+                                :keys ,(set-difference (plist-keys plist)
                                          (plist-keys clean-plist))))
     with in-err = (unless (or bad (member :in (plist-keys clean-plist)))
                     (setf clean-plist (append '(:in "(missing)") clean-plist))
                     `(:in "plog" :status "missing :in key"
-                       :keys ,(plist-keys slist)))
+                       :keys ,(plist-keys plist)))
     for log in *logs*
     for sev-log = (getf log :severity-threshold)
     for stream = (getf log :stream)
