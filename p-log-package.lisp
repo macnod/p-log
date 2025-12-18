@@ -10,4 +10,6 @@
     perror
     pinfo
     plog
-    pwarn))
+    pwarn
+    pversion
+    ))
