@@ -206,6 +206,9 @@ returns the number of streams that were closed."
     collect k
     collect (princ-to-string v)))
 
+(defun clean-list-values (list)
+  (loop for v in list collect (princ-to-string v)))
+
 (defun plist-to-jsonl (severity plist)
   (loop for k in plist by #'cddr
     for v-raw in (cdr plist) by #'cddr
@@ -213,22 +216,22 @@ returns the number of streams that were closed."
               ((and v-raw (listp v-raw) (plistp v-raw))
                 (cons :map (clean-plist-values v-raw)))
               ((and v-raw (listp v-raw))
-                (cons :array v-raw))
-              (t v-raw))
+                (cons :array (clean-list-values v-raw)))
+              (t (princ-to-string v-raw)))
     appending (list k v) into clean-plist
     finally
     (return
       (format nil "~a~%"
-        (to-json
-          (ds
+        (ds:to-json
+          (ds:ds
             `(:map
-               :timestamp ,(timestamp-string)
+               :timestamp ,(dt:timestamp-string)
                :severity ,severity
                :message (:map ,@clean-plist))))))))
 
 (defun plist-to-plain (severity plist)
   (format nil "~a [~a] ~a~%"
-    (timestamp-string)
+    (dt:timestamp-string)
     severity
     (loop for k in plist by #'cddr
       for v in (cdr plist) by #'cddr

@@ -1,6 +1,9 @@
 (defpackage :p-log
-  (:use :cl :dc-ds :dc-time :sb-thread)
-  (:local-nicknames (:re :ppcre))
+  (:use :cl :sb-thread)
+  (:local-nicknames
+    (:re :ppcre)
+    (:ds :dc-ds)
+    (:dt :dc-time))
   (:export
     close-log-stream
     close-log-streams
