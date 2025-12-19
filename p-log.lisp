@@ -200,12 +200,18 @@ returns the number of streams that were closed."
   (loop for name in (mapcar (lambda (s) (getf s :name)) *logs*)
     count (close-log-stream name)))
 
+(defun clean-plist-values (plist)
+  (loop for k in plist by #'cddr
+    for v in (cdr plist) by #'cddr
+    collect k
+    collect (princ-to-string v)))
+
 (defun plist-to-jsonl (severity plist)
   (loop for k in plist by #'cddr
     for v-raw in (cdr plist) by #'cddr
     for v = (cond
               ((and v-raw (listp v-raw) (plistp v-raw))
-                (cons :map v-raw))
+                (cons :map (clean-plist-values v-raw)))
               ((and v-raw (listp v-raw))
                 (cons :array v-raw))
               (t v-raw))
@@ -226,7 +232,8 @@ returns the number of streams that were closed."
     severity
     (loop for k in plist by #'cddr
       for v in (cdr plist) by #'cddr
-      collect (format nil "~(~a~)=~a" k v)
+      collect (concatenate 'string
+                (string-downcase (princ-to-string k)) "=" (princ-to-string v))
       into pairs
       finally
       (return (format nil "~{~a~^; ~}" pairs)))))
