@@ -306,7 +306,7 @@ value of a :message key."
     when plist-err-entry do (format stream plist-err-entry)
     when in-err-entry do (format stream in-err-entry)
     when bad-entry do (format stream bad-entry)
-    (force-output stream)
+    do (force-output stream)
     counting log-entry))
 
 (defun pdebug (&rest plist) (plog :debug plist))
