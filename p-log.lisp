@@ -263,9 +263,11 @@ returns the number of streams that were closed."
 
 (defun plog (severity plist)
   "Outputs a log entry to every log sink (see *LOGS*) where SEVERITY is greater
-than the severity of the log sink. The log entry is built using PLIST, which
-consists of key/value pairs. The keys must be keywords and the values can be
-strings, numbers, or simple vectors, lists, or hash-tables. For example:
+than the severity of the log sink. SEVERITY must be one of :error, :warn, :info,
+or :debug, with :error having the highest severity and :debug the lowest. The
+log entry is built using PLIST, which consists of key/value pairs. The keys must
+be keywords and the values can be strings, numbers, or simple vectors, lists, or
+hash-tables. For example:
 
     (log-it-pairs :debug :ip ip-address :port port :error error-string)
 
