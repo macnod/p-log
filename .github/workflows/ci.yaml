@@ -41,7 +41,7 @@ jobs:
         run: echo "✅ Cache hit for dependencies"
 
       - name: Install dependencies
-        if: steps.depcache.outputs.cache-hit != 'true'
+        if: steps.depcache.outputs.cache-hit != 'true' || github.event.inputs.disable-cache == 'true'
         shell: bash
         run: make install-dependencies
 
