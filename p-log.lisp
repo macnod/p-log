@@ -221,13 +221,14 @@ returns the number of streams that were closed."
     appending (list k v) into clean-plist
     finally
     (return
-      (format nil "~a~%"
+      (concatenate 'string
         (ds:to-json
           (ds:ds
             `(:map
                :timestamp ,(dt:timestamp-string)
                :severity ,severity
-               :message (:map ,@clean-plist))))))))
+               :message (:map ,@clean-plist))))
+        (format nil "~%")))))
 
 (defun plist-to-plain (severity plist)
   (format nil "~a [~a] ~a~%"
